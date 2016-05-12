@@ -128,14 +128,20 @@ Razaspiegraph = datos['race'].value_counts().plot(kind='pie', autopct='%.2f',
                                             figsize=(6, 6),
                                             title='Personas diagnosticadas con diabetes')
 
+
 plot = (100 * datos['race'].value_counts() / len(datos['race'])).plot(
 kind='bar', title='Razas diagnosticadas con diabetes %')
 
+#Utilizamos crosstab para crear una tabla de frecuencia de la data de las dos variables cualitativas. 
+
 tablacont = pd.crosstab(index=datos['race'],
-            columns=datos['gender'], margins=True)
+            columns=datos['gender'])
+tablacont.tail()
+
             
 tablaprob = pd.crosstab(index=datos['race'], columns=datos['gender']).apply(lambda r: r/r.sum() *100,
                                 axis=1)
+tablaprob.tail()
 
 
 graficars = pd.crosstab(index=datos['race'],
@@ -159,9 +165,6 @@ fig.savefig("graficaedad.png")
 
 #¿Existe una relación entre el tiempo que las personas con diabetes están en el hospital y el número de laboratorios que les hacen?
 
-#agrupar por tiempo en el hospital  sacando las medianas
-
-
 
 tiempo = datos.time_in_hospital
 
@@ -169,17 +172,15 @@ labs = datos.num_lab_procedures
 
 dfcuant = pd.DataFrame({'Tiempo en el hospital' : tiempo,
                 'Num. de laboratorios': labs})
-dfcuant.describe()
+                
+bylabs = dfcuant.groupby('Tiempo en el hospital')
+meanlabs = bylabs["Num. de laboratorios"].mean()
+grafrelacion = plt.plot(meanlabs)
+fig = grafrelacion.get_figure()
+fig.savefig("grafrelacion.png")
 
 
-tabtiempolabs = pd.crosstab(index=datos['time_in_hospital'],
-            columns=datos['num_lab_procedures'], margins=True)
-
-medlabs = tabtiempolabs.mean(axis=1)
 
 
-dispcuant= dfcuant.plot(kind='scatter', x='Tiempo en el hospital', y='Num. de laboratorios')
-correlacion = dfcuant.corr()
-
-#R// NO EXISTE RELACIÓN ENTRE LAS VARIABLES
+#R// SI EXISTE RELACIÓN ENTRE LAS VARIABLES
 
